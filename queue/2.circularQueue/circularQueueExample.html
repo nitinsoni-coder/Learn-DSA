@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f5f5f5;
+        padding: 50px;
+      }
+
+      .inputContainer {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      input {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .queueContainer {
+        display: flex;
+        gap: 10px;
+      }
+
+      .box {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        font-weight: 800;
+        border: 2px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="inputContainer">
+        <input type="number" id="size" placeholder="Enter queue size" />
+        <button onclick="generate()">Generate Queue</button>
+      </div>
+
+      <div class="inputContainer">
+        <input
+          type="text"
+          id="enqueueItem"
+          placeholder="Enter item to enqueue"
+        />
+        <button onclick="enqueueItem()">Enqueue</button>
+        <button onclick="dequeueItem()">Dequeue</button>
+      </div>
+
+      <div class="queueContainer"></div>
+    </div>
+
+    <script>
+      let queue = null;
+
+      class CircularQueue {
+        constructor(size) {
+          this.size = size;
+          this.items = new Array(size).fill(null);
+          this.front = -1;
+          this.rear = -1;
+        }
+
+        isEmpty() {
+          return this.rear === -1;
+        }
+
+        isFull() {
+          return (this.rear + 1) % this.size === this.front;
+        }
+
+        enqueue(element) {
+          if (this.isFull()) {
+            alert("Queue is full");
+            return;
+          }
+
+          if (this.isEmpty()) {
+            this.front = this.rear = 0;
+          } else {
+            this.rear = (this.rear + 1) % this.size;
+          }
+
+          this.items[this.rear] = element;
+          updateUI();
+        }
+
+        dequeue() {
+          if (this.isEmpty()) {
+            alert("Queue is empty");
+            return;
+          }
+
+          this.items[this.front] = null;
+
+          if (this.front === this.rear) {
+            this.front = this.rear = -1;
+          } else {
+            this.front = (this.front + 1) % this.size;
+          }
+
+          updateUI();
+        }
+
+        print() {
+          return this.items;
+        }
+      }
+
+      function generate() {
+        const size = parseInt(document.getElementById("size").value, 10);
+        if (isNaN(size) || size <= 0) {
+          alert("Please enter a valid size");
+          return;
+        }
+
+        queue = new CircularQueue(size);
+        updateUI();
+      }
+
+      function enqueueItem() {
+        if (!queue) {
+          alert("Please generate a queue first.");
+          return;
+        }
+
+        const item = document.getElementById("enqueueItem").value.trim();
+        if (item === "") {
+          alert("Please enter a value to enqueue.");
+          return;
+        }
+
+        queue.enqueue(item);
+        document.getElementById("enqueueItem").value = "";
+      }
+
+      function dequeueItem() {
+        if (!queue) {
+          alert("Please generate a queue first.");
+          return;
+        }
+
+        queue.dequeue();
+      }
+
+      function updateUI() {
+        const queueContainer = document.querySelector(".queueContainer");
+        queueContainer.innerHTML = "";
+
+        if (!queue) return;
+
+        queue.items.forEach((item) => {
+          const div = document.createElement("div");
+          div.classList.add("box");
+          div.innerText = item !== null ? item : "-";
+          queueContainer.appendChild(div);
+        });
+      }
+    </script>
+  </body>
+</html>

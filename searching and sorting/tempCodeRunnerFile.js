@@ -1,0 +1,2 @@
+
+  left = mergeSort(left);

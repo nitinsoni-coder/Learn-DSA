@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emergency Response System</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      .container {
+        width: 50%;
+        margin: auto;
+      }
+      .queue {
+        margin-top: 20px;
+      }
+      .case {
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+      }
+      .high {
+        background-color: red;
+        color: white;
+      }
+      .medium {
+        background-color: orange;
+        color: white;
+      }
+      .low {
+        background-color: yellow;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Emergency Response System</h2>
+      <input type="text" id="caseName" placeholder="Enter Emergency Case" />
+      <select id="casePriority">
+        <option value="1">High</option>
+        <option value="2">Medium</option>
+        <option value="3">Low</option>
+      </select>
+      <button onclick="addCase()">Add Case</button>
+      <button onclick="processCase()">Process Case</button>
+      <div class="queue" id="queue"></div>
+    </div>
+
+    <script>
+      class PriorityQueue {
+        constructor() {
+          this.queue = [];
+        }
+        enqueue(caseName, priority) {
+          this.queue.push({ caseName, priority });
+          this.queue.sort((a, b) => a.priority - b.priority);
+          renderQueue();
+        }
+        dequeue() {
+          if (this.queue.length === 0) return alert("No cases to process");
+          const caseToProcess = this.queue.shift();
+          alert("Processing: " + caseToProcess.caseName);
+          renderQueue();
+        }
+      }
+
+      const emergencyQueue = new PriorityQueue();
+
+      function addCase() {
+        const caseName = document.getElementById("caseName").value;
+        const casePriority = parseInt(
+          document.getElementById("casePriority").value
+        );
+        if (!caseName) return alert("Please enter a case name");
+        emergencyQueue.enqueue(caseName, casePriority);
+        document.getElementById("caseName").value = "";
+      }
+
+      function processCase() {
+        emergencyQueue.dequeue();
+      }
+
+      function renderQueue() {
+        const queueDiv = document.getElementById("queue");
+        queueDiv.innerHTML = "";
+        emergencyQueue.queue.forEach((item) => {
+          const div = document.createElement("div");
+          div.className =
+            "case " +
+            (item.priority === 1
+              ? "high"
+              : item.priority === 2
+              ? "medium"
+              : "low");
+          div.textContent = `${item.caseName} (Priority: ${
+            item.priority === 1
+              ? "High"
+              : item.priority === 2
+              ? "Medium"
+              : "Low"
+          })`;
+          queueDiv.appendChild(div);
+        });
+      }
+    </script>
+  </body>
+</html>
